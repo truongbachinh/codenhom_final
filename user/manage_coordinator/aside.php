@@ -49,7 +49,7 @@
             <li class="menu-item ">
                 <a href="#" class="open-dropdown menu-link">
                     <span class="menu-label">
-                        <a href="./select_faculty_to_add_topic.php"><span class="menu-name">My Faculty Add Topic
+                        <a href="./my_topic.php"><span class="menu-name">My Faculty
                             </span></a>
                     </span>
                     <span class="menu-icon">

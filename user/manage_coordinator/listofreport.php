@@ -1,24 +1,24 @@
 <?php
 session_start();
 include "../../connect_db.php";
-?>
+$idTopic = $_GET['idt'];
+$userFacultyId = $_SESSION["current_user"]["faculty_id"];
+$userId = $_SESSION["current_user"]["u_id"];
 
-<?php
 // Perform query
-$file_faculty_id = 34;
+
 /** @var TYPE_NAME $conn */
-$result = mysqli_query($conn, "SELECT * FROM file_submit_to_system WHERE file_faculty_id = $file_faculty_id");
-$file_submit_to_system = mysqli_fetch_assoc($result);
-$faculty = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM faculty WHERE f_id = $file_faculty_id"),MYSQLI_ASSOC );
+// $result = mysqli_query($conn, "SELECT * FROM file_submit_to_system WHERE file_faculty_id = $file_faculty_id");
+// $file_submit_to_system = mysqli_fetch_assoc($result);
+// $faculty = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM faculty WHERE f_id = $file_faculty_id"), MYSQLI_ASSOC);
 
 $studentSb = array();
-$res = $conn->query("select f.*, u.* from file_submit_to_system as f INNER JOIN user as u ON f.user_id = u.u_id");
+$res = $conn->query("SELECT files.*, u.* FROM file_submit_to_topic as files INNER JOIN user as u ON files.file_userId_uploaded = u.u_id WHERE u.role = 'student' AND files.file_topic_uploaded = '$idTopic' ORDER BY id DESC LIMIT 1");
 
-while ($rowSt = mysqli_fetch_array($res))
-{
+while ($rowSt = mysqli_fetch_array($res)) {
     $studentSb[] = $rowSt;
-    print_r($rowSt);
 }
+
 
 
 ?>
@@ -93,34 +93,57 @@ while ($rowSt = mysqli_fetch_array($res))
                                         <th style="color: black !important" scope="col">STUDENT OWNER</th>
                                         <th style="color: black !important" scope="col">EMAIL</th>
                                         <th style="color: black !important" scope="col">STATUS</th>
-                                        <th style="color: black !important" scope="col">ACTION</th>
                                         <th style="color: black !important" scope="col">SUBMIT TIME</th>
+                                        <th style="color: black !important" scope="col">ACTION</th>
                                     </tr>
                                 </thead>
                                 <tbody style="text-align: center;">
-                                <?php
-                                $stt = 1;
-                                foreach ($studentSb as $stReport)
-                                {
-                                    $a = $stReport['file_name'];
-                                    $userId = $stReport['user_id'];
-//                                    $user = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM user WHERE user.u_id = $userId"),MYSQLI_ASSOC );
-//                                    $value_file = mysqli_fetch_array($value, MYSQLI_ASSOC);
-//                                    print_r($value["file_date_uploaded"]);
+                                    <?php
+                                    $stt = 1;
+                                    foreach ($studentSb as $stReport) {
+                                        $a = $stReport['file_name'];
+                                        $userId = $stReport['u_id'];
+                                        $idFile = $stReport['id'];
+                                        //                                    $user = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM user WHERE user.u_id = $userId"),MYSQLI_ASSOC );
+                                        //                                    $value_file = mysqli_fetch_array($value, MYSQLI_ASSOC);
+                                        //                                    print_r($value["file_date_uploaded"]);
                                     ?>
-                                    <tr>
-                                        <th scope="row"><?= $stt++ ?></th>
-                                        <td><img src="../images/AvatarListofReport.png"></td>
-                                        <td style="padding: 2.5%;"><?= $stReport["username"] ?></td>
-                                        <td style="padding: 2.5%;"><?= $stReport["email"] ?></td>
-                                        <td style="padding: 1.5%;"><div style="border-radius: 20px" class="btn btn-success">NOT GRADE</div></td>
-                                        <td style="padding: 1.5%;"><button style="border-radius: 10px" type="button" class="btn btn-primary">GRADE</button></td>
-                                        <td style="padding: 2.5%;"><?= $stReport["file_date_uploaded"] ?></td>
-                                    </tr>
-                                <?php
-                                }
+                                        <tr>
+                                            <th scope="row"><?= $stt++ ?></th>
+                                            <td><img src="../images/AvatarListofReport.png"></td>
+                                            <td style="padding: 2.5%;"><?= $stReport["username"] ?></td>
+                                            <td style="padding: 2.5%;"><?= $stReport["email"] ?></td>
+                                            <td style="padding: 1.5%;">
+                                                <?php
 
-                                ?>
+                                                if (($stReport["file_status"]) == "1") {
+                                                ?>
+                                                    <button style="border-radius: 20px" class="btn btn-primary">Not Grade</button>
+                                                <?php
+
+                                                } else if (($stReport["file_status"]) == "2") {
+                                                ?>
+                                                    <button style="border-radius: 20px" class="btn btn-success">Approved</button>
+                                                <?php
+
+                                                } else if (($stReport["file_status"]) == "3") {
+                                                ?>
+                                                    <button style="border-radius: 20px" class="btn btn-danger">Rejected</button>
+                                                <?php
+                                                }
+                                                ?>
+
+                                            </td>
+                                            <td style="padding: 2.5%;"><?= $stReport["file_date_uploaded"] ?></td>
+
+                                            <td style="padding: 1.5%; color:red"> <a href="reportPage.php?idfile=<?= $idFile ?>&idst=<?= $userId ?>">Select </a></td>
+
+
+                                        </tr>
+                                    <?php
+                                    }
+
+                                    ?>
 
                                 </tbody>
                             </table>

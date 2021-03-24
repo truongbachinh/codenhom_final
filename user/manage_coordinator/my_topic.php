@@ -1,6 +1,26 @@
 <?php
+session_start();
 include "../connect_db.php";
-$idFaculty = $_GET['idl'];
+// $idFaculty = $_GET['idl'];
+$userFacultyId = $_SESSION["current_user"]["faculty_id"];
+$userId = $_SESSION["current_user"]["u_id"];
+
+
+$topic = $conn->query("SELECT faculty.*,user.*, topic.* FROM (( faculty INNER JOIN topic ON faculty.f_id = topic.faculty_id) INNER JOIN user ON faculty.f_id = user.faculty_id) WHERE user.u_id = '$userId' AND user.role = 'manager-coordinator'");
+$topicSubmit = mysqli_fetch_assoc($topic);
+
+if ($topicSubmit != NULL) {
+
+    $selected_date = ($topicSubmit["topic_deadline"]);
+    // echo $selected_date, "a ";
+    $duration = 14;
+    $duration_type = 'day';
+    $date1 = ("2021/05/06 22:00:00");
+    $deadline = date('Y/m/d H:i:s', strtotime($selected_date . ' +' . $duration . ' ' . $duration_type));
+}
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -43,50 +63,12 @@ $idFaculty = $_GET['idl'];
         <!-- Header -->
         <?php include 'header.php' ?>
         <!-- Session -->
-
-        <section class="admin-content">
-            <div class="container m-t-30">
-                <div class="card m-b-30">
-                    <div class="card-header">
-                        <h5 class="m-b-0">
-                            Create New Topic
-                        </h5>
-                        <p class="m-b-0 text-muted">
-                            Please input fullfill information to create topic.
-                        </p>
-                    </div>
-                    <div class="card-body ">
-                        <form action="" name="manageTopic" method="POST" enctype="multipart/form-data">
-                            <div class="form-group">
-                                <label for="inputName1">Id of Topic</label>
-                                <input type="text" class="form-control" id="inputTopicId" name="topicId" placeholder="Enter id of topic" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="inputName1">Name of Topic</label>
-                                <input type="text" class="form-control" id="inputTopicName" name="topicName" placeholder="Enter name of topic" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="inputName1">Description of Topic</label>
-                                <input type="text" class="form-control" id="inputTopicDescription" name="topicDescription" placeholder="Enter name of topic" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Select Begin Date</label>
-                                <input type="datetime-local" class="form-control" id="startDeadLine" name="startDeadLine">
-                            </div>
-                            <input type="submit" class="btn btn-primary btn-md float-right" name="addTopic" value="Create Topic">
-                        </form>
-                    </div>
-
-                </div>
-            </div>
-            </div>
-        </section>
     </main>
     <div class="container">
         <div class="row-fluid" style="background-color: white; min-height: 1000px; padding:10px;">
             <div class="widget-content nopadding">
                 <div class="widget-title"> <span class="icon"> <i class="icon-tag"></i> </span>
-                    <h5>List Categories</h5>
+                    <h5>List Topic</h5>
                 </div>
                 <table class="table table-bordered table-striped">
                     <thead>
@@ -97,13 +79,18 @@ $idFaculty = $_GET['idl'];
                             <th>Topic description</th>
                             <th>Topic Start deadline</th>
                             <th>Topic End deadline</th>
+                            <th>View Detail</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         $i = 1;
-                        $res = mysqli_query($conn, "select * from topic where topic_of_faculty = '$idFaculty'");
-                        while ($row = mysqli_fetch_array($res)) {
+                        $topicInfor = $conn->query("SELECT faculty.*,user.*, topic.* FROM (( faculty INNER JOIN topic ON faculty.f_id = topic.faculty_id) INNER JOIN user ON faculty.f_id = user.faculty_id) WHERE user.u_id = '$userId' AND user.role = 'manager-coordinator'");
+                        $topicFacultyInfor = array();
+                        while ($tInfor = mysqli_fetch_array($topicInfor)) {
+                            $topicFacultyInfor[] = $tInfor;
+                        }
+                        foreach ($topicFacultyInfor as $row) {
                         ?>
                             <tr>
                                 <td><?php echo $i++; ?></td>
@@ -111,7 +98,8 @@ $idFaculty = $_GET['idl'];
                                 <td><?php echo $row["topic_name"]; ?></td>
                                 <td><?php echo $row["topic_description"]; ?></td>
                                 <td><?php echo  $row["topic_deadline"] ?></td>
-                                <td>+14 days</td>
+                                <td><?= $deadline ?></td>
+                                <td style="color: red"><a href="listofreport.php?idt=<?= $row["id"] ?>">Select</a></td>
                             </tr>
                         <?php
                         }

@@ -77,7 +77,7 @@
                     <li class="menu-item">
                         <a href="./manage-topics.php" class=" menu-link">
                             <span class="menu-label">
-                                <a href="./manage_topics.php"><span class="menu-name">Manage Topic</span></a>
+                                <a href="./add-topic.php"><span class="menu-name">Manage Topic</span></a>
                             </span>
                             <span class="menu-icon">
                                 <i class="mdi mdi-book-open-variant mdi-24px "></i>

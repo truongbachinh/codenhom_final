@@ -1,8 +1,8 @@
 <?php
 session_start();
 include "../connect_db.php";
-$idFaculty = $_GET["idl"];
-$result = mysqli_query($conn, "SELECT * from faculty where f_id = '$idFaculty'");
+$userId = $_SESSION["current_user"]["u_id"];
+$result = mysqli_query($conn, "SELECT faculty.*,user.*, topic.* FROM (( faculty INNER JOIN topic ON faculty.f_id = topic.faculty_id) INNER JOIN user ON faculty.f_id = user.faculty_id) WHERE user.u_id = '$userId' AND user.role = 'student'");
 $faculty = mysqli_fetch_assoc($result);
 
 ?>
@@ -45,8 +45,18 @@ $faculty = mysqli_fetch_assoc($result);
                     <tbody>
                         <?php
                         $i = 1;
-                        $res = mysqli_query($conn, "select * from topic where topic_of_faculty = '$idFaculty'");
-                        while ($row = mysqli_fetch_array($res)) {
+                        $topicInfor = $conn->query("SELECT faculty.*,user.*, topic.* FROM (( faculty INNER JOIN topic ON faculty.f_id = topic.faculty_id) INNER JOIN user ON faculty.f_id = user.faculty_id) WHERE user.u_id = '$userId' AND user.role = 'student'");
+                        $topicStudentInfor = array();
+                        while ($tInfor = mysqli_fetch_array($topicInfor)) {
+                            $topicStudentInfor[] = $tInfor;
+                        }
+
+                        foreach ($topicStudentInfor as $row) {
+                            $selected_date = ($row["topic_deadline"]);
+                            // echo $selected_date, "a ";
+                            $duration = 14;
+                            $duration_type = 'day';
+                            $deadline = date('Y/m/d H:i:s', strtotime($selected_date . ' +' . $duration . ' ' . $duration_type));
                         ?>
                             <tr>
                                 <td><?php echo $i++; ?></td>
@@ -54,8 +64,8 @@ $faculty = mysqli_fetch_assoc($result);
                                 <td><?php echo $row["topic_name"]; ?></td>
                                 <td><?php echo $row["topic_description"]; ?></td>
                                 <td><?php echo  $row["topic_deadline"] ?></td>
-                                <td>+14 days</td>
-                                <td><a href="submit.php?idf=<?= $idFaculty ?>&idt=<?= $row['id'] ?>">Select</a></td>
+                                <td><?= $deadline ?></td>
+                                <td><a href="submit.php?idf=<?= $row["faculty_id"] ?>&idt=<?= $row['id'] ?>">Select</a></td>
                             </tr>
                         <?php
                         }

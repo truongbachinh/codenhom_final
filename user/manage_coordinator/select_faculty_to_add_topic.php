@@ -1,12 +1,18 @@
 <?php
 session_start();
 include "../connect_db.php";
+$userFacultyId = $_SESSION["current_user"]["faculty_id"];
 $userId = $_SESSION["current_user"]["u_id"];
-$infor = $conn->query("SELECT f.*, u.* FROM faculty as f INNER JOIN user as u ON f.f_manager = u.u_id where role = 'manager-coordinator' and u_id = '$userId' ");
-$userInfor = array();
+$infor = $conn->query("SELECT f.*, u.* FROM user as u INNER JOIN faculty as f ON u.faculty_id = f.f_id where role = 'manager-coordinator' and u_id = '$userId' ");
+$userFacultyInfor = array();
 while ($userInfor = mysqli_fetch_array($infor)) {
     $userFacultyInfor[] = $userInfor;
 }
+$amountS = $conn->query("SELECT count(`u_id`) from  `user` where `role` = 'student' AND `faculty_id` = '$userFacultyId'");
+$amountStudent = mysqli_fetch_assoc($amountS);
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -41,6 +47,7 @@ while ($userInfor = mysqli_fetch_array($infor)) {
                             <th>Id</th>
                             <th>Faculty id</th>
                             <th>Faculty name</th>
+                            <th>Amount Student</th>
                             <th>Select</th>
                         </tr>
                     </thead>
@@ -53,7 +60,7 @@ while ($userInfor = mysqli_fetch_array($infor)) {
                                 <td><?php echo $i++; ?></td>
                                 <td><?php echo $uFaculty["faculty_id"]; ?></td>
                                 <td><?php echo $uFaculty["f_name"]; ?></td>
-
+                                <td><?php echo $amountStudent["count(`u_id`)"] ?></td>
                                 <td><a href="add-topic.php?idl=<?php echo $uFaculty["f_id"]; ?>">Select</a></td>
                                 </td>
                             </tr>

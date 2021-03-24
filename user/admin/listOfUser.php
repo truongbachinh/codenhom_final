@@ -4,6 +4,18 @@ session_start();
 
 $i = 1;
 $res = mysqli_query($conn, "select * from user");
+$resFaculty = $conn->query("SELECT * from faculty");
+$faculty = array();
+while ($rowFaculty =  mysqli_fetch_array($resFaculty)) {
+    $faculty[] = $rowFaculty;
+}
+
+$infor = $conn->query("SELECT f.*, u.* FROM user as u INNER JOIN faculty as f ON  u.faculty_id = f.f_id ");
+$userInforFaculty = array();
+while ($userInfor = mysqli_fetch_array($infor)) {
+    $userInforFaculty[] = $userInfor;
+}
+
 
 ?>
 <!DOCTYPE html>
@@ -118,6 +130,24 @@ $res = mysqli_query($conn, "select * from user");
                                                             <option value="0">Non-active</option>
                                                         </select>
                                                     </div>
+
+                                                    <div class="form-group">
+                                                        <label for="inputRole" class="col-md-12" style="padding: 0">Faculty</label>
+                                                        <select name="facultyOption" class="form-select" style="width: 100%;height: 34px;border-color: #D4D2D2;border-radius: 5px">
+                                                            <option selected>--Select Faculty--</option>
+                                                            <?php
+                                                            foreach ($faculty as $selectFacuty) {
+                                                            ?>
+                                                                <option value="<?= $selectFacuty["f_id"] ?>"><?= $selectFacuty["f_name"] ?></option>
+
+
+                                                            <?php
+
+                                                            }
+                                                            ?>
+
+                                                        </select>
+                                                    </div>
                                                     <div class="alert alert-success" id="success" style="margin-top: 10px; display: none">
                                                         <strong>Success!</strong> Add user Successfully.
                                                     </div>
@@ -145,16 +175,17 @@ $res = mysqli_query($conn, "select * from user");
                                         <th style="color: black !important;width: 16%;" scope="col">NAME</th>
                                         <th style="color: black !important" scope="col">USERNAME</th>
                                         <th style="color: black !important" scope="col">EMAIL</th>
-                                        <th style="color: black !important; width: 10%;" scope="col">CREATE DATE TIME</th>
-                                        <th style="color: black !important; width: 10%;" scope="col">UPDATE DATE TIME</th>
+                                        <th style="color: black !important" scope="col">Faculty</th>
                                         <th style="color: black !important" scope="col">ROLE</th>
                                         <th style="color: black !important" scope="col">STATUS</th>
+                                        <th style="color: black !important; width: 10%;" scope="col">CREATE DATE TIME</th>
+                                        <th style="color: black !important; width: 10%;" scope="col">UPDATE DATE TIME</th>
                                         <th scope="col"><img src="../images/dots48.png"></th>
                                     </tr>
                                 </thead>
                                 <tbody style="text-align: center;">
                                     <?php
-                                    while ($row = mysqli_fetch_array($res)) {
+                                    foreach ($userInforFaculty as $row) {
                                     ?>
                                         <tr>
                                             <th scope="row" style="padding: 2.5%;"><?= $i++ ?></th>
@@ -162,22 +193,8 @@ $res = mysqli_query($conn, "select * from user");
                                             <td id="fullname" style="padding: 2.5%;"><?= (!empty($row['fullname']) ? $row['fullname'] : "Null") ?></td>
                                             <td id="username" style="padding: 2.5%;"><?= (!empty($row['username']) ? $row['username'] : "Null") ?></td>
                                             <td style="padding: 2.5%;"><?= (!empty($row['email']) ? $row['email'] : "Null") ?></td>
-                                            <td style="padding: 2.5%;"><?php echo date("d/m/y H:i", $row["u_create_time"]); ?></td>
-                                            <?php
-                                            if (!empty($row['u_update_time'] == 0)) {
-
-                                            ?>
-                                                <td style="padding: 2.5%;">Not Update</td>
-
-                                            <?php
-                                            } else {  ?>
-                                                <td style="padding: 2.5%;"><?php echo date("d/m/y H:i", $row["u_update_time"]); ?></td>
-                                            <?php
-                                            }
-                                            ?>
+                                            <td style="padding: 2.5%;"><?= (!empty($row['f_name']) ? $row['f_name'] : "Null") ?></td>
                                             <td style="padding: 2.5%;"><?= (!empty($row['role']) ? $row['role'] : "Null") ?></td>
-
-
                                             <?php
                                             if (!empty($row['status'] == 1)) {
                                             ?>
@@ -192,6 +209,20 @@ $res = mysqli_query($conn, "select * from user");
 
 
 
+                                            ?>
+
+                                            <td style="padding: 2.5%;"><?php echo date("d/m/y H:i", $row["u_create_time"]); ?></td>
+                                            <?php
+                                            if (!empty($row['u_update_time'] == 0)) {
+
+                                            ?>
+                                                <td style="padding: 2.5%;">Not Update</td>
+
+                                            <?php
+                                            } else {  ?>
+                                                <td style="padding: 2.5%;"><?php echo date("d/m/y H:i", $row["u_update_time"]); ?></td>
+                                            <?php
+                                            }
                                             ?>
 
 
@@ -467,8 +498,8 @@ if (isset($_POST["addNewUser"])) {
         <?php
     } else {
 
-        $addUser = $conn->query("INSERT INTO `user` (`u_id`, `username`, `password`, `email`, `status`, `role`, `fullname`, `u_create_time`)
-        VALUES (NULL, '$_POST[userName]', '$_POST[password]', '$_POST[email]', '$_POST[statusOption]', '$_POST[roleOption]', '$_POST[fullName]', '" . time() . "');");
+        $addUser = $conn->query("INSERT INTO `user` (`u_id`, `username`, `password`, `email`, `status`, `role`,`faculty_id`, `fullname`, `u_create_time`)
+        VALUES (NULL, '$_POST[userName]', '$_POST[password]', '$_POST[email]', '$_POST[statusOption]', '$_POST[roleOption]',$_POST[facultyOption], '$_POST[fullName]', '" . time() . "');");
         if ($addUser == true) {
         ?>
             <script type="text/javascript">

@@ -1,17 +1,17 @@
 <?php
 include "connect_db.php";
 session_start();
-$user = $conn->query("SELECT * from user where role = 'manager-coordinator'");
-$userRole = array();
-while ($rowUser = mysqli_fetch_array($user)) {
-    $userRole[] = $rowUser;
-}
+// $user = $conn->query("SELECT * from user where role = 'manager-coordinator'");
+// $userRole = array();
+// while ($rowUser = mysqli_fetch_array($user)) {
+//     $userRole[] = $rowUser;
+// }
 
-$infor = $conn->query("SELECT f.*, u.* FROM faculty as f INNER JOIN user as u ON f.f_manager = u.u_id where role = 'manager-coordinator' ");
-$userInfor = array();
-while ($userInfor = mysqli_fetch_array($infor)) {
-    $userFacultyInfor[] = $userInfor;
-}
+// $infor = $conn->query("SELECT f.*, u.* FROM faculty as f INNER JOIN user as u ON f.f_manager = u.u_id where role = 'manager-coordinator' ");
+// $userInfor = array();
+// while ($userInfor = mysqli_fetch_array($infor)) {
+//     $userFacultyInfor[] = $userInfor;
+// }
 
 
 ?>
@@ -131,7 +131,7 @@ while ($userInfor = mysqli_fetch_array($infor)) {
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <form action="" name="manageFaculty" method="POST" enctype="multipart/form-data">
+                                                        <form action="" name="addFaculty" method="POST" enctype="multipart/form-data">
                                                             <div class="form-group">
                                                                 <label for="inputfacultyId">Faculty ID</label>
                                                                 <input type="text" class="form-control" id="inputFacultyId" name="idFaculty" placeholder="Input Id" required>
@@ -141,19 +141,8 @@ while ($userInfor = mysqli_fetch_array($infor)) {
                                                                 <input type="text" class="form-control" id="inputNameFaculty" name="nameFaculty" placeholder="Input name" required>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label for="inputRole" class="col-md-12" style="padding: 0">Manager Faculty</label>
-                                                                <select name="facultyManage" class="form-select" style="width: 100%;height: 34px;border-color: #D4D2D2;border-radius: 5px">
-                                                                    <option selected>--Select Manager Faculty--</option>
-                                                                    <?php
-                                                                    foreach ($userRole as $userFaculty) {
-                                                                        var_dump($userFaculty['fullname']);
-                                                                    ?>
-                                                                        <option value="<?= $userFaculty['u_id'] ?>"><?= $userFaculty['fullname'] ?></option>
-
-                                                                    <?php
-                                                                    }
-                                                                    ?>
-                                                                </select>
+                                                                <label for="inputNameFaculty">Manage Faculty</label>
+                                                                <input type="text" class="form-control" id="inputFacultyFaculty" name="facultyManage" placeholder="Input name" required>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="inputManager">Faculty Desciption </label>
@@ -194,16 +183,7 @@ while ($userInfor = mysqli_fetch_array($infor)) {
                                                             <label for="inputfacultyId">Faculty ID</label>
                                                             <input type="text" class="form-control" id="inputFacultyId" name="facultyId" disabled value="Faculty_01">
                                                         </div>
-                                                        <div class="form-group">
-                                                            <label for="inputRole" class="col-md-12" style="padding: 0">Manager Faculty</label>
-                                                            <select name="facultyManage" class="form-select" style="width: 100%;height: 34px;border-color: #D4D2D2;border-radius: 5px">
-                                                                <option selected>--Select Manager Faculty--</option>
-                                                                <option value="student">Student</option>
-                                                                <option value="manager-coordinator">Manager Coordinator</option>
-                                                                <option value="manager-marketing">Manager Marketing</option>
-                                                                <option value="admin">Admin</option>
-                                                            </select>
-                                                        </div>
+
                                                         <div class="form-group">
                                                             <label for="inputManager">Desciption</label>
                                                             <textarea class="form-control" aria-label="With textarea" spellcheck="false"></textarea>
@@ -353,6 +333,7 @@ while ($userInfor = mysqli_fetch_array($infor)) {
 if (isset($_POST["submitFaculty"])) {
 
 
+    var_dump($_POST);
 
     $count = 0;
     $sql_user = "SELECT * from faculty where faculty_id ='$_POST[idFaculty]'";
