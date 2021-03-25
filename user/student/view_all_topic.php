@@ -8,11 +8,11 @@ $faculty = $conn->query("SELECT user.*, faculty.* FROM user INNER JOIN faculty O
 $studentFacultyInfor = mysqli_fetch_assoc($faculty);
 
 
-$topicInfor = $conn->query("SELECT file_submit_to_topic.*, topic.* FROM file_submit_to_topic RIGHT JOIN topic ON topic.id = file_submit_to_topic.file_topic_uploaded");
-$topicStudentInfor = array();
-while ($tInfor = mysqli_fetch_array($topicInfor)) {
-    $topicStudentInfor[] = $tInfor;
-}
+// $topicInfor = $conn->query("SELECT file_submit_to_topic.*, topic.* FROM file_submit_to_topic RIGHT JOIN topic ON topic.id = file_submit_to_topic.file_topic_uploaded RIGHT JOIN user ON user.u_id = user.u_id WHERE user.u_id = '$userId' AND user.role = 'student' ");
+// $topicStudentInfor = array();
+// while ($tInfor = mysqli_fetch_array($topicInfor)) {
+//     $topicStudentInfor[] = $tInfor;
+// }
 
 //$topicSubmit = $conn->query("SELECT topic.*, file_submit_to_topic.*,user.* from file_submit_to_topic INNER JOIN topic ON topic.id = file_submit_to_topic.file_topic_uploaded INNER JOIN user ON usser.u_id = file_submit_to_topic.file_userId_uploaded");
 //$topicSubmit = $conn->query("SELECT * from file_submit_to_topic where ");
@@ -64,7 +64,7 @@ while ($tInfor = mysqli_fetch_array($topicInfor)) {
                             <th>Topic description</th>
                             <th>Topic Start deadline</th>
                             <th>Topic End deadline</th>
-                            <th>Sumission status</th>
+                            <!-- <th>Sumission status</th> -->
                             <th>Select Topic To sucbmit</th>
                         </tr>
                     </thead>
@@ -74,7 +74,9 @@ while ($tInfor = mysqli_fetch_array($topicInfor)) {
                         // $topicInfor = $conn->query("SELECT faculty.*,user.*, topic.* FROM (( faculty INNER JOIN topic ON faculty.f_id = topic.faculty_id) INNER JOIN user ON faculty.f_id = user.faculty_id) WHERE user.u_id = '$userId' AND user.role = 'student'");
 
 
-                        foreach ($topicStudentInfor as $row) {
+                        // foreach ($topicStudentInfor as $row) {
+                        $topicInfor = $conn->query("SELECT topic.* FROM topic");
+                        while ($row = mysqli_fetch_array($topicInfor)) {
                             $selected_date = ($row["topic_deadline"]);
                             // echo $selected_date, "a ";
                             $duration = 14;
@@ -87,31 +89,31 @@ while ($tInfor = mysqli_fetch_array($topicInfor)) {
                                 <td><?php echo $row["topic_description"]; ?></td>
                                 <td><?php echo  $row["topic_deadline"] ?></td>
                                 <td><?= $deadline ?></td>
-                                <td><?php
-                                    if (($row["file_status"]) == "1") {
-                                    ?>
+                                <!-- <td><?php
+                                            if (($row["file_status"]) == "1") {
+                                            ?>
                                         <span style="color:green; font-size:16px;font-weight:bold;">Submited</span>
                                     <?php
 
-                                    } else if (($row["file_status"]) == "2") {
+                                            } else if (($row["file_status"]) == "2") {
                                     ?>
                                         <span style="color:blue; font-size:16px;font-weight:bold;">Approved</span>
                                     <?php
 
-                                    } else if (($row["file_status"]) == "3") {
+                                            } else if (($row["file_status"]) == "3") {
                                     ?>
                                         <span style="color:red; font-size:16px;font-weight:bold;">Rejected</span>
                                     <?php
-                                    } else {
+                                            } else {
 
                                     ?>
                                         <span style="color:black; font-size:16px;font-weight:bold;">Not Graded</span>
                                     <?php
 
-                                    }
+                                            }
 
                                     ?>
-                                </td>
+                                </td> -->
                                 <!-- <td><a href="submit.php?idf=<?= $row["faculty_id"] ?>&idt=<?= $row['id'] ?>">Select</a></td> -->
                                 <td><a href="submit.php?idt=<?= $row['id'] ?>">Select</a></td>
                             </tr>
