@@ -19,18 +19,18 @@ if ($topicSubmit != NULL) {
     $deadline = date('Y/m/d H:i:s', strtotime($selected_date . ' +' . $duration . ' ' . $duration_type));
 }
 
-$resFaculty = $conn->query("SELECT * from faculty");
-$faculty = array();
-while ($rowFaculty =  mysqli_fetch_array($resFaculty)) {
-    $faculty[] = $rowFaculty;
-}
+// $resFaculty = $conn->query("SELECT * from faculty");
+// $faculty = array();
+// while ($rowFaculty =  mysqli_fetch_array($resFaculty)) {
+//     $faculty[] = $rowFaculty;
+// }
 
 
-$infor = $conn->query("SELECT f.*, t.* FROM topic as t INNER JOIN faculty as f ON  t.faculty_id = f.f_id ");
-$topicInfor = array();
-while ($topicF = mysqli_fetch_array($infor)) {
-    $topicInfor[] = $topicF;
-}
+// $infor = $conn->query("SELECT f.*, t.* FROM topic as t INNER JOIN faculty as f ON  t.faculty_id = f.f_id ");
+// $topicInfor = array();
+// while ($topicF = mysqli_fetch_array($infor)) {
+//     $topicInfor[] = $topicF;
+// }
 
 
 
@@ -99,23 +99,6 @@ while ($topicF = mysqli_fetch_array($infor)) {
                                 <input type="text" class="form-control" id="inputTopicName" name="topicName" placeholder="Enter name of topic" required>
                             </div>
                             <div class="form-group">
-                                <label for="inputRole" class="col-md-12" style="padding: 0">Add topic to Faculty</label>
-                                <select name="facultyOption" class="form-select" style="width: 100%;height: 34px;border-color: #D4D2D2;border-radius: 5px">
-                                    <option selected>--Select Faculty--</option>
-                                    <?php
-                                    foreach ($faculty as $selectFacuty) {
-                                    ?>
-                                        <option value="<?= $selectFacuty["f_id"] ?>"><?= $selectFacuty["f_name"] ?></option>
-
-
-                                    <?php
-
-                                    }
-                                    ?>
-
-                                </select>
-                            </div>
-                            <div class="form-group">
                                 <label for="inputName1">Description of Topic</label>
                                 <input type="text" class="form-control" id="inputTopicDescription" name="topicDescription" placeholder="Enter name of topic" required>
                             </div>
@@ -142,9 +125,8 @@ while ($topicF = mysqli_fetch_array($infor)) {
                     <thead>
                         <tr>
                             <th>Id</th>
-                            <th>Topic id</th>
+
                             <th>Topic name</th>
-                            <th>Topic of Faculty</th>
                             <th>Topic description</th>
                             <th>Topic Start deadline</th>
                             <th>Topic End deadline</th>
@@ -154,13 +136,11 @@ while ($topicF = mysqli_fetch_array($infor)) {
                     <tbody>
                         <?php
                         $i = 1;
-                        foreach ($topicInfor as $row) {
+                        while ($row = mysqli_fetch_array($topic)) {
                         ?>
                             <tr>
                                 <td><?php echo $i++; ?></td>
-                                <td><?php echo $row["topic_id"]; ?></td>
                                 <td><?php echo $row["topic_name"]; ?></td>
-                                <td><?php echo $row["f_name"]; ?></td>
                                 <td><?php echo $row["topic_description"]; ?></td>
                                 <td><?php echo  $row["topic_deadline"] ?></td>
                                 <td><?= $deadline ?></td>
@@ -213,19 +193,19 @@ if (isset($_POST["addTopic"])) {
     var_dump($_POST);
 
     $count = 0;
-    $sql_user = "SELECT * from topic where topic_id ='$_POST[topicId]'";
+    $sql_user = "SELECT * from topic where topic_name ='$_POST[topicName]'";
     $res = mysqli_query($conn, $sql_user) or die(mysqli_error($conn));
     $count = mysqli_num_rows($res);
 
     if ($count > 0) {
 ?>
         <script type="text/javascript">
-            alert("Topic Id exits !");
-            window.location.replace("./add-topic.php?idl");
+            alert("Topic Name exits !");
+            window.location.replace("./add-topic.php");
         </script>
     <?php
     } else {
-        $addFaculty =   mysqli_query($conn, "INSERT INTO `topic` (`id`, `topic_id`, `topic_name`, `topic_description`, `topic_deadline`,`faculty_id`) VALUES (NULL, '$_POST[topicId]', '$_POST[topicName]', '$_POST[topicDescription]', '$_POST[startDeadLine]','$_POST[facultyOption]');");
+        $addFaculty =   mysqli_query($conn, "INSERT INTO `topic` (`id`,  `topic_name`, `topic_description`, `topic_deadline`,`faculty_id`) VALUES (NULL, '$_POST[topicName]', '$_POST[topicDescription]', '$_POST[startDeadLine]','$_POST[facultyOption]');");
     ?>
         <script type="text/javascript">
             alert("add faculty success !");

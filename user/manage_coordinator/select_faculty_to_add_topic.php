@@ -3,9 +3,10 @@ session_start();
 include "../connect_db.php";
 $userFacultyId = $_SESSION["current_user"]["faculty_id"];
 $userId = $_SESSION["current_user"]["u_id"];
-$infor = $conn->query("SELECT f.*, u.* FROM user as u INNER JOIN faculty as f ON u.faculty_id = f.f_id where role = 'manager-coordinator' and u_id = '$userId' ");
+// $infor = $conn->query("SELECT f.*, u.* FROM user as u INNER JOIN faculty as f ON u.faculty_id = f.f_id where role = 'manager-coordinator' and u_id = '$userId' ");
+$faculty = $conn->query("SELECT user.*, faculty.* FROM user INNER JOIN faculty ON faculty.f_id = user.faculty_id WHERE user.u_id = '$userId' AND user.role = 'manager-coordinator'");
 $userFacultyInfor = array();
-while ($userInfor = mysqli_fetch_array($infor)) {
+while ($userInfor = mysqli_fetch_array($faculty)) {
     $userFacultyInfor[] = $userInfor;
 }
 $amountS = $conn->query("SELECT count(`u_id`) from  `user` where `role` = 'student' AND `faculty_id` = '$userFacultyId'");

@@ -2,8 +2,17 @@
 session_start();
 include "../connect_db.php";
 $userId = $_SESSION["current_user"]["u_id"];
-$result = mysqli_query($conn, "SELECT faculty.*,user.*, topic.* FROM (( faculty INNER JOIN topic ON faculty.f_id = topic.faculty_id) INNER JOIN user ON faculty.f_id = user.faculty_id) WHERE user.u_id = '$userId' AND user.role = 'student'");
-$faculty = mysqli_fetch_assoc($result);
+
+$result = mysqli_query($conn, "SELECT user.*, topic.*,faculty.* FROM topic INNER JOIN user ON faculty.f_id = user.faculty_id WHERE user.u_id = '$userId' AND user.role = 'student'");
+$faculty = $conn->query("SELECT user.*, faculty.* FROM user INNER JOIN faculty ON faculty.f_id = user.faculty_id WHERE user.u_id = '$userId' AND user.role = 'student'");
+$studentFacultyInfor = mysqli_fetch_assoc($faculty);
+
+
+$topicInfor = $conn->query("SELECT * from topic");
+$topicStudentInfor = array();
+while ($tInfor = mysqli_fetch_array($topicInfor)) {
+    $topicStudentInfor[] = $tInfor;
+}
 
 ?>
 <!DOCTYPE html>
@@ -23,18 +32,18 @@ $faculty = mysqli_fetch_assoc($result);
 </head>
 
 <body>
-    <h1>Faculty: <?= $faculty["f_name"] ?></h1>
+    <h1>Faculty: <?= $studentFacultyInfor["f_name"] ?></h1>
     <div class="container">
         <div class="row-fluid" style="background-color: white; min-height: 1000px; padding:10px;">
             <div class="widget-content nopadding">
                 <div class="widget-title"> <span class="icon"> <i class="icon-tag"></i> </span>
-                    <h5>List Categories</h5>
+                    <h5>List Of Submission</h5>
                 </div>
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>Id</th>
-                            <th>Topic id</th>
+
                             <th>Topic name</th>
                             <th>Topic description</th>
                             <th>Topic Start deadline</th>
@@ -45,11 +54,8 @@ $faculty = mysqli_fetch_assoc($result);
                     <tbody>
                         <?php
                         $i = 1;
-                        $topicInfor = $conn->query("SELECT faculty.*,user.*, topic.* FROM (( faculty INNER JOIN topic ON faculty.f_id = topic.faculty_id) INNER JOIN user ON faculty.f_id = user.faculty_id) WHERE user.u_id = '$userId' AND user.role = 'student'");
-                        $topicStudentInfor = array();
-                        while ($tInfor = mysqli_fetch_array($topicInfor)) {
-                            $topicStudentInfor[] = $tInfor;
-                        }
+                        // $topicInfor = $conn->query("SELECT faculty.*,user.*, topic.* FROM (( faculty INNER JOIN topic ON faculty.f_id = topic.faculty_id) INNER JOIN user ON faculty.f_id = user.faculty_id) WHERE user.u_id = '$userId' AND user.role = 'student'");
+
 
                         foreach ($topicStudentInfor as $row) {
                             $selected_date = ($row["topic_deadline"]);
@@ -60,12 +66,12 @@ $faculty = mysqli_fetch_assoc($result);
                         ?>
                             <tr>
                                 <td><?php echo $i++; ?></td>
-                                <td><?php echo $row["topic_id"]; ?></td>
                                 <td><?php echo $row["topic_name"]; ?></td>
                                 <td><?php echo $row["topic_description"]; ?></td>
                                 <td><?php echo  $row["topic_deadline"] ?></td>
                                 <td><?= $deadline ?></td>
-                                <td><a href="submit.php?idf=<?= $row["faculty_id"] ?>&idt=<?= $row['id'] ?>">Select</a></td>
+                                <!-- <td><a href="submit.php?idf=<?= $row["faculty_id"] ?>&idt=<?= $row['id'] ?>">Select</a></td> -->
+                                <td><a href="submit.php?idt=<?= $row['id'] ?>">Select</a></td>
                             </tr>
                         <?php
                         }

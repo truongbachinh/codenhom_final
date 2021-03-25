@@ -7,6 +7,7 @@ $userId = $_SESSION["current_user"]["u_id"];
 
 
 $topic = $conn->query("SELECT faculty.*,user.*, topic.* FROM (( faculty INNER JOIN topic ON faculty.f_id = topic.faculty_id) INNER JOIN user ON faculty.f_id = user.faculty_id) WHERE user.u_id = '$userId' AND user.role = 'manager-coordinator'");
+$topic = $conn->query("SELECT * FROM topic");
 $topicSubmit = mysqli_fetch_assoc($topic);
 
 if ($topicSubmit != NULL) {
@@ -74,7 +75,7 @@ if ($topicSubmit != NULL) {
                     <thead>
                         <tr>
                             <th>Id</th>
-                            <th>Topic id</th>
+
                             <th>Topic name</th>
                             <th>Topic description</th>
                             <th>Topic Start deadline</th>
@@ -85,7 +86,9 @@ if ($topicSubmit != NULL) {
                     <tbody>
                         <?php
                         $i = 1;
-                        $topicInfor = $conn->query("SELECT faculty.*,user.*, topic.* FROM (( faculty INNER JOIN topic ON faculty.f_id = topic.faculty_id) INNER JOIN user ON faculty.f_id = user.faculty_id) WHERE user.u_id = '$userId' AND user.role = 'manager-coordinator'");
+                        // $topicInfor = $conn->query("SELECT faculty.*,user.*, topic.* FROM (( faculty INNER JOIN topic ON faculty.f_id = topic.faculty_id) INNER JOIN user ON faculty.f_id = user.faculty_id) WHERE user.u_id = '$userId' AND user.role = 'manager-coordinator'");
+                        $topicInfor = $conn->query("SELECT user.*, topic.*, faculty.* FROM topic INNER JOIN user ON user.u_id = user.u_id INNER JOIN faculty ON faculty.f_id = user.faculty_id WHERE user.u_id = '$userId' AND user.role = 'manager-coordinator'");
+
                         $topicFacultyInfor = array();
                         while ($tInfor = mysqli_fetch_array($topicInfor)) {
                             $topicFacultyInfor[] = $tInfor;
@@ -94,7 +97,7 @@ if ($topicSubmit != NULL) {
                         ?>
                             <tr>
                                 <td><?php echo $i++; ?></td>
-                                <td><?php echo $row["topic_id"]; ?></td>
+
                                 <td><?php echo $row["topic_name"]; ?></td>
                                 <td><?php echo $row["topic_description"]; ?></td>
                                 <td><?php echo  $row["topic_deadline"] ?></td>

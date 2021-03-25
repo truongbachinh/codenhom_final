@@ -6,6 +6,8 @@ $userFacultyId = $_SESSION["current_user"]["faculty_id"];
 $userId = $_SESSION["current_user"]["u_id"];
 
 $fileContent = $conn->query("SELECT * from `file_content` where `file_submit_Id` = '$idFile'");
+
+$topicContent = $conn->query("SELECT * from `topic` where `file_submit_Id` = '$idFile'");
 // $viewFile = array();
 // while ($view = mysqli_fetch_array($fileContent)) {
 //     $viewFile[] = $view;
@@ -17,6 +19,14 @@ if (isset($_POST['uploadCommnet'])) {
 
     $uploadCmt = $conn->query("INSERT INTO `file_comment` (`file_comment_id`, `file_comment_content`, `file_comment_time`, `file_comment_user`, `file_submited_id`) VALUES (NULL, '$_POST[commentContent]', '" . time() . "', '$userId', '$idFile'); ");
     $changeStatus = $conn->query("UPDATE `file_submit_to_topic` SET `file_status` = '$_POST[statusOfFile]' where `id` = '$idFile'");
+    if ($uploadCmt == true) {
+?>
+        <script>
+            window.location.replace("./listofreport.php ? idt = 25");
+        </script>
+<?php
+
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -70,7 +80,7 @@ if (isset($_POST['uploadCommnet'])) {
                             ?>
                                     <div>
                                         <p>File STT <?= $count++ ?></p>
-                                        <a href="<?= $row['file_content_name'] ?>"> <img src="<?php echo $imageURL; ?>" alt="" width="350" height="350" class="img-fluid" id="img-view-details" />
+                                        <a href="<?= $row['file_content_name'] ?>"> <img src="<?php echo $imageURL; ?>" alt="" width="350" height="350  " class="img-fluid" id="img-view-details" />
                                         </a>
 
                                     </div>

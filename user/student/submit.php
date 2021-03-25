@@ -4,13 +4,17 @@ include "./connect_db.php";
 
 $userId = $_SESSION["current_user"]["u_id"];
 
-$idFaculty = $_GET["idf"];
+
 $idTopic = $_GET["idt"];
 
 $topic = $conn->query("SELECT * from topic where id = '$idTopic' ");
 $topicSubmit = mysqli_fetch_assoc($topic);
-$faculty = $conn->query("SELECT * from faculty where f_id = '$idFaculty' ");
-$facultySubmit = mysqli_fetch_assoc($faculty);
+$userInfor = $conn->query("SELECT faculty.*,user.* from faculty INNER JOIN user ON faculty.f_id = user.faculty_id where u_id = '$userId' ");
+$userInforFaculty = mysqli_fetch_assoc($userInfor);
+
+// while ($rowInfor = mysqli_fetch_array($userInfor)) {
+//     $userInforFaculty[] = $rowInfor;
+// }
 
 $file = $conn->query("SELECT * from file_submit_to_topic where file_userId_uploaded = '$userId' AND `file_topic_uploaded` = '$idTopic' AND `id` = (SELECT MAX(id) from `file_submit_to_topic` where `file_userId_uploaded` = '$userId' ) ");
 
@@ -120,7 +124,7 @@ if (isset($_POST['uploadFile'])) {
 
 ?>
         <script>
-            window.location.replace("./submit.php?idf=<?= $idFaculty ?>&idt=<?= $idTopic ?>")
+            window.location.replace("./submit.php?idt=<?= $idTopic ?>")
         </script>
 <?php
 
@@ -174,9 +178,6 @@ if (isset($_POST['uploadFile'])) {
             <div class="container m-t-30">
                 <div class="card m-b-30">
                     <div class="card-header">
-                        <h1 class="m-b-0">
-                            Submit Article to faculty <span style="color:red"> <?= $facultySubmit['f_name'] ?></span>
-                        </h1>
                         <br>
                         <br>
                         <h5>
@@ -261,7 +262,7 @@ if (isset($_POST['uploadFile'])) {
 
                                         <td>
                                             <?php
-                                            if (strtotime($fileSubmit["file_date_edited"]) != '-62169987208') {
+                                            if (isset($fileSubmit["file_date_edited"]) && strtotime($fileSubmit["file_date_edited"]) != '-62169987208') {
                                             ?>
                                                 <span><?= $fileSubmit["file_date_edited"] ?></span>
                                             <?php
@@ -383,7 +384,7 @@ if (isset($_POST['uploadFile'])) {
                                                     </div>
                                                     <div class="form-group col-md-6">
                                                         <label for="inputAuthor">Author</label>
-                                                        <input type="text" class="form-control" id="inputAuthor" name="nameAuthor">
+                                                        <input type="text" class="form-control" id="inputAuthor" name="nameAuthor" value="<?= $userInforFaculty["fullname"] ?>" readonly>
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
