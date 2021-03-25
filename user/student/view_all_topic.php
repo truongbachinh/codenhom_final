@@ -90,22 +90,22 @@ while ($tInfor = mysqli_fetch_array($topicInfor)) {
                                 <td><?php
                                     if (($row["file_status"]) == "1") {
                                     ?>
-                                        <span>Processing</span>
+                                        <span style="color:green; font-size:16px;font-weight:bold;">Submited</span>
                                     <?php
 
                                     } else if (($row["file_status"]) == "2") {
                                     ?>
-                                        <span style="color:blue; font-size:16px">Approved</span>
+                                        <span style="color:blue; font-size:16px;font-weight:bold;">Approved</span>
                                     <?php
 
                                     } else if (($row["file_status"]) == "3") {
                                     ?>
-                                        <span style="color:red; font-size:16px">Rejected</span>
+                                        <span style="color:red; font-size:16px;font-weight:bold;">Rejected</span>
                                     <?php
                                     } else {
 
                                     ?>
-                                        <span>Not Graded</span>
+                                        <span style="color:black; font-size:16px;font-weight:bold;">Not Graded</span>
                                     <?php
 
                                     }
