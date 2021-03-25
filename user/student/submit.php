@@ -262,9 +262,9 @@ if (isset($_POST['uploadFile'])) {
 
                                         <td>
                                             <?php
-                                            if (isset($fileSubmit["file_date_edited"]) && strtotime($fileSubmit["file_date_edited"]) != '-62169987208') {
+                                            if (isset($fileSubmit["file_date_uploaded"]) && strtotime($fileSubmit["file_date_uploaded"]) != '-62169987208') {
                                             ?>
-                                                <span><?= $fileSubmit["file_date_edited"] ?></span>
+                                                <span><?= $fileSubmit["file_date_uploaded"] ?></span>
                                             <?php
                                             } else {
                                             ?>

@@ -2,16 +2,37 @@
 session_start();
 include "../../connect_db.php";
 $idFile = $_GET['idfile'];
+$idStudent = $_GET['idst'];
 $userFacultyId = $_SESSION["current_user"]["faculty_id"];
 $userId = $_SESSION["current_user"]["u_id"];
 
-$fileContent = $conn->query("SELECT * from `file_content` where `file_submit_Id` = '$idFile'");
 
-$topicContent = $conn->query("SELECT * from `topic` where `file_submit_Id` = '$idFile'");
-// $viewFile = array();
-// while ($view = mysqli_fetch_array($fileContent)) {
-//     $viewFile[] = $view;
+// SELECT file_content.*, file_comment.*,file_submit_to_topic.* from `file_submit_to_topic`INNER JOIN file_content ON file_submit_to_topic.id = file_content.file_submit_id INNER JOIN file_comment ON file_comment.file_submited_id = file_submit_to_topic.id where `file_submit_Id` = '60'
+// $fileSubmission = $conn->query("SELECT topic.*, file_submit_to_topic.*, file_content.*, file_comment.* from `topic` INNER JOIN file_submit_to_topic ON file_submit_to_topic.file_topic_uploaded = topic.id INNER JOIN file_content ON file_content.file_submit_id = file_submit_to_topic.id INNER JOIN file_comment ON file_comment.file_submited_id = file_submit_to_topic.id where `file_submit_Id` = '$idFile'");
+// $topicContent = $conn->query("SELECT * from `topic` where `file_submit_Id` = '$idFile'");
+
+// $fileSubmission = $conn->query("SELECT file_content.*, file_comment.* from `file_content` INNER JOIN file_comment ON file_comment.file_submited_id = file_content.file_submit_id where file_content.file_submit_id = '60' AND file_comment.file_submited_id = '60'");
+// $fileSubmissionContent = array();
+// while ($view = mysqli_fetch_array($fileSubmission)) {
+//     $fileSubmissionContent[] = $view;
 // }
+// // $topicContent = mysqli_fetch_assoc($topic);
+
+// // var_dump($fileSubmission);
+// foreach ($fileSubmissionContent as $rowSb) {
+//     var_dump($rowSb['file_comment_content']);
+// }
+
+// exit;
+
+
+$fileContent = $conn->query("SELECT file_content.* from `file_content` where `file_submit_Id` = '$idFile'");
+$fileComment = $conn->query("SELECT file_comment.*,u.* from `file_comment` INNER JOIN user as u ON u.u_id = file_comment.file_comment_user where `file_submited_Id` = '$idFile'");
+$fileSubmission = $conn->query("SELECT file_submit_to_topic.*, user.*,faculty.* FROM file_submit_to_topic INNER JOIN user ON file_submit_to_topic.file_userId_uploaded = user.u_id INNER JOIN faculty ON faculty.f_id = user.faculty_id WHERE user.role = 'student' AND user.faculty_id = '$userFacultyId'  ORDER BY id DESC LIMIT 1");
+
+
+
+
 
 ?>
 <?php
@@ -22,7 +43,9 @@ if (isset($_POST['uploadCommnet'])) {
     if ($uploadCmt == true) {
 ?>
         <script>
-            window.location.replace("./listofreport.php ? idt = 25");
+            alert("oke");
+            location.reload();
+            // window.location.replace("./listofreport.php?idfile=<?= $fileSubmission['id'] ?>&idst=<?= $fileSubmission['u_id'] ?>");
         </script>
 <?php
 
@@ -62,15 +85,17 @@ if (isset($_POST['uploadCommnet'])) {
 <link rel='stylesheet' type='text/css' href='https://d33wubrfki0l68.cloudfront.net/css/0940f25997c8e50e65e95510b30245d116f639f0/light/assets/fonts/feather/feather-icons.css' />
 <!--Bootstrap + atmos Admin CSS-->
 <link rel='stylesheet' type='text/css' href='https://d33wubrfki0l68.cloudfront.net/css/16e33a95bb46f814f87079394f72ef62972bd197/light/assets/css/atmos.min.css' />
+<link rel="stylesheet" href="./css/report_page.css">
 
 <body>
     <main class="admin-main">
         <section id="container">
             <?php include 'header.php' ?>
             <section>
-                <section class="wrapper ">
-                    <div class="row ">
-                        <div class="col-lg-9 main-chart ">
+                <section class="wrapper">
+                    <div class="row py-3">
+
+                        <div class="col-m-8 content-form">
                             <?php
                             $count = 1;
                             if ($fileContent->num_rows > 0) {
@@ -89,63 +114,123 @@ if (isset($_POST['uploadCommnet'])) {
                             }
                             ?>
                         </div>
+                        <div class="col-m-4 feedback-form">
 
-                        <div class="col-lg-3 ds " style="position: fixed; right: 0; z-index: 1;height: 100%; ">
-                            <!--COMPLETED ACTIONS DONUTS CHART-->
-                            <div class="donut-main row ">
-                                <div class=" col-lg-12 text-right ">
-                                    <a href="#!" class="mdi mdi-24px mdi-close text-muted"></a>
-                                    <a class="iconify" data-icon="ion:close" data-inline="false"></a>
-                                </div>
-                                <div class=" col-lg-12 text-left row mt-1">
-                                    <div class=" col-md-4 text-center">
-                                        <img src="img/Rectangle 54.png ">
-                                    </div>
-                                    <div class="col-md-8 mt-1">
-                                        <h5 style="color: #000; ">Nguyen Minh Phong</h5>
-                                        <h5 style="color: #000; ">Topic Cloud computing</h6>
-                                    </div>
-                                </div>
-                                <div class=" col-lg-12 text-left ">
-                                    <h4 style="font-weight: bolder; color: #000; margin: 3% 1%;">Submission</h4>
-                                </div>
-                                <div class=" col-lg-12 text-left ">
-                                    <div style="background-color: #06D6A0; height: 40px; ">
-                                        <div style="margin-top: 4%; font-size: 18px; font-weight: 400;color: #000; padding-top: 2% !important; padding-left: 3%;">
-                                            Submitted for approved</div>
-                                    </div>
-                                </div>
-                                <div class=" col-lg-12 text-left ">
-                                    <div style="color: #000;margin-top: 6%; font-size: 18px; font-weight: 400; ">Student cannot edit this submission
-                                    </div>
-                                </div>
-                                <div class=" col-lg-12 text-left row mt-2">
-                                    <div class=" col-lg-12 text-left row m-1">
-                                        <hr class=" col-md-2 " style="margin: 3% 1% ;width: 1%;height: 2px;border-width: 0;color: gray;background-color: gray; flex: 0 0 2.66667%; ">
-                                        </hr>
-                                        <div class=" col-md-10 " style="color: #000; font-size: 12px; font-weight: 400; ">V1.0 PHONG98 - Validation Phong</div>
-                                    </div>
-                                    <div class=" col-lg-12 text-left row  m-1">
-                                        <hr class=" col-md-2 " style="margin: 3% 1% ;width: 1%;height: 2px;border-width: 0;color: gray;background-color: gray; flex: 0 0 2.66667%; ">
-                                        </hr>
-                                        <div class=" col-lg-10" style="color: #000; font-size: 12px; font-weight: 400; ">V1.0 PHONG98 - Validation Phong</div>
-                                    </div>
-                                </div>
-                                <div class=" col-md-12 col-lg-12 col-xs-12 text-left " style=" margin-top:7%; width: 80%; margin-left: 5%; border-radius: 15px ">
-                                    <h3>Feedback</h3>
-                                    <textarea style="width: 88%; height: 180px; border-radius: 3px; border-radius: 14px; resize: none; margin-bottom: 7% "></textarea>
-                                </div>
-                                <div class=" col-md-12 col-lg-12 col-xs-12 text-right row" style="margin-top: 4%; ">
-                                    <div class="col-md-6 col-lg-6 col-xs-6 ">
-                                        <button class="btn btn-primary ">Approved</button>
-                                    </div>
-                                    <div class="col-md-6 col-lg-6 col-xs-6 text-left " style="padding-left: 12%">
-                                        <button class="btn btn-danger ">Reject</button>
-                                    </div>
-                                </div>
+
+                            <div class="infor-student-submission">
+                                <?php
+                                $count = 1;
+                                if ($fileSubmission->num_rows > 0) {
+                                    while ($rowFile = $fileSubmission->fetch_assoc()) {
+                                ?>
+                                        <div>
+                                            <b class="student-if">Submission information</b>
+                                            <hr>
+                                            <div>
+                                                <span class="student-ift">Student: </span><span class="student-ifto"> <?= $rowFile['fullname'] ?></span>
+                                            </div>
+                                            <div>
+                                                <span class="student-ift">Email: </span><span class="student-ifto"> <?= $rowFile['email'] ?></span>
+                                            </div>
+                                            <div>
+                                                <span class="student-ift">File name submitssion:</span><span class="student-ifto"><?= $rowFile['file_name'] ?></span>
+                                            </div>
+                                            <div>
+                                                <span class="student-ift">File date upload:</span><span class="student-ifto"> <?= $rowFile['file_date_uploaded'] ?></span>
+                                            </div>
+                                            <hr>
+                                            <?php
+                                            if (($rowFile["file_status"]) == "1") {
+                                            ?>
+                                                <div>
+                                                    <span class="student-ift" style=" font-size: 17px !important;">Submission status:</span><span class="student-ifto">
+                                                        Processing</span>
+                                                </div>
+                                            <?php
+
+
+                                            } else if (($rowFile["file_status"]) == "3") {
+                                            ?>
+                                                <div>
+                                                    <span class="student-ift" style=" font-size: 17px !important;">Submission status:</span>
+                                                    <b class="student-ifto" style="color:red !important; font-size:16px">Rejected</b>
+                                                </div>
+                                            <?php
+                                            } else if (($rowFile["file_status"]) == "2") {
+                                            ?>
+                                                <div>
+                                                    <span class="student-ift" style=" font-size: 17px !important;">Submission status:</span>
+                                                    <b class="student-ifto" style="color:green !important; font-size:16px">Approved</b>
+                                                </div>
+                                            <?php
+                                            }
+                                            ?>
+                                            </span>
+                                        </div>
                             </div>
+
+                    <?php }
+                                }
+                    ?>
+
+
+                    <!--COMPLETED ACTIONS DONUTS CHART-->
+                    <div>
+                        <form action="" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label class="col-md-6" style="padding: 0; font-weight:bold;">Update status</label>
+                                <select name="statusOfFile" class="form-select" style="width:90%; height: 34px;border-color: #D4D2D2;border-radius: 5px">
+                                    <option selected>--Select status--</option>
+                                    <option value="2">Approved</option>
+                                    <option value="3">Reject</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <!-- <label for="inputName">Comment</label>
+                                                <textarea type="text" class="form-control" id="inputName" name="commentContent" placeholder="Name of article"></textarea> -->
+                                <h3>Feedback</h3>
+                                <textarea type="text" class="form-control" id="inputName" name="commentContent" placeholder="Feedback to student" style="width: 88%; height: 180px; border-radius: 3px; border-radius: 14px; resize: none; margin-bottom: 7% "></textarea>
+                            </div>
+                            <div class="form-group" style="text-align:center;">
+                                <input type="submit" name="uploadCommnet" class="btn btn-succecss" value="Feedback" style="font-size: 20px; background-color: yellowgreen; border-radius:16px; display: inline-block; " id="uploadFile"></input>
+                            </div>
+                        </form>
+                    </div>
+
+                    <hr>
+
+                    <div class="feedback-submission">
+                        <b class="student-if">Feedback</b>
+                        <?php
+                        $count = 1;
+                        if ($fileComment->num_rows > 0) {
+                            while ($rowFileComment = $fileComment->fetch_assoc()) {
+                        ?>
+                                <div>
+
+                                    <div>
+                                        <span class="student-ift">User comment: </span><span class="student-ifto"><?= $rowFileComment['fullname'] ?></span>
+                                    </div>
+                                    <div>
+                                        <span sclass="student-ift">Content comment: </span><span class="student-ifto"> <?= $rowFileComment['file_comment_content'] ?></span>
+                                    </div>
+                                    <div>
+                                        <span sclass="student-ift">Time feedback: </span><span class="student-ifto"> <?= date("Y-m-d H:i:s", $rowFileComment['file_comment_time']) ?></span>
+                                    </div>
+                                </div>
+                                <hr>
+
+
+                        <?php }
+                        }
+                        ?>
+                    </div>
+                    <hr>
                         </div>
                     </div>
+                    </div>
+                    </div>
+
                     </div>
                 </section>
             </section>
@@ -153,27 +238,8 @@ if (isset($_POST['uploadCommnet'])) {
             <br>
             <br>
             <div>
-                <h5>Form comment</h5>
-                <form action="" method="post" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <div class="form-group col-md-6">
-                            <label for="inputName">Comment</label>
-                            <textarea type="text" class="form-control" id="inputName" name="commentContent" placeholder="Name of article"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-6" style="padding: 0">Status of file submited</label>
-                            <select name="statusOfFile" class="form-select" style="width:50%; height: 34px;border-color: #D4D2D2;border-radius: 5px">
-                                <option selected>--Select status--</option>
-                                <option value="2">Approved</option>
-                                <option value="3">Reject</option>
 
-                            </select>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <input type="submit" name="uploadCommnet" class="btn btn-succecss" value="Comment" id="uploadFile"></input>
-                        </div>
-                    </div>
-                </form>
+
                 <footer class="site-footer " style="width: 75%; ">
                     <div class="text-center ">
                         <p>
@@ -187,6 +253,7 @@ if (isset($_POST['uploadCommnet'])) {
                         </a>
                     </div>
                 </footer>
+            </div>
         </section>
 
     </main>

@@ -7,17 +7,19 @@ include "../connect_db.php";
 
 
 $topic = $conn->query("SELECT * from topic");
-$topicSubmit = mysqli_fetch_assoc($topic);
-
-if ($topicSubmit != NULL) {
-    $topicSubmit = mysqli_fetch_assoc($topic);
-    $selected_date = ($topicSubmit["topic_deadline"]);
-    // echo $selected_date, "a ";
-    $duration = 14;
-    $duration_type = 'day';
-    $date1 = ("2021/05/06 22:00:00");
-    $deadline = date('Y/m/d H:i:s', strtotime($selected_date . ' +' . $duration . ' ' . $duration_type));
+$topicSubmit = array();
+while ($rowSbt = mysqli_fetch_array($topic)) {
+    $topicSubmit[] = $rowSbt;
 }
+
+
+
+
+
+// var_dump($topicSubmit["topic_deadline"]);
+// var_dump($deadline);
+// exit;
+
 
 // $resFaculty = $conn->query("SELECT * from faculty");
 // $faculty = array();
@@ -91,10 +93,6 @@ if ($topicSubmit != NULL) {
                     <div class="card-body ">
                         <form action="" name="manageTopic" method="POST" enctype="multipart/form-data">
                             <div class="form-group">
-                                <label for="inputName1">Id of Topic</label>
-                                <input type="text" class="form-control" id="inputTopicId" name="topicId" placeholder="Enter id of topic" required>
-                            </div>
-                            <div class="form-group">
                                 <label for="inputName1">Name of Topic</label>
                                 <input type="text" class="form-control" id="inputTopicName" name="topicName" placeholder="Enter name of topic" required>
                             </div>
@@ -125,7 +123,6 @@ if ($topicSubmit != NULL) {
                     <thead>
                         <tr>
                             <th>Id</th>
-
                             <th>Topic name</th>
                             <th>Topic description</th>
                             <th>Topic Start deadline</th>
@@ -136,15 +133,20 @@ if ($topicSubmit != NULL) {
                     <tbody>
                         <?php
                         $i = 1;
-                        while ($row = mysqli_fetch_array($topic)) {
+                        foreach ($topicSubmit as $rowTopic) {
+                            $selected_date = $rowTopic["topic_deadline"];
+                            // echo $selected_date, "a ";
+                            $duration = 14;
+                            $duration_type = 'day';
+                            $deadline = date('Y/m/d H:i:s', strtotime($selected_date . ' +' . $duration . ' ' . $duration_type));
                         ?>
                             <tr>
                                 <td><?php echo $i++; ?></td>
-                                <td><?php echo $row["topic_name"]; ?></td>
-                                <td><?php echo $row["topic_description"]; ?></td>
-                                <td><?php echo  $row["topic_deadline"] ?></td>
+                                <td><?php echo $rowTopic["topic_name"]; ?></td>
+                                <td><?php echo $rowTopic["topic_description"]; ?></td>
+                                <td><?php echo  $rowTopic["topic_deadline"] ?></td>
                                 <td><?= $deadline ?></td>
-                                <td style="color: red"><a href="#.php?idt=<?= $row["id"] ?>">Select</a></td>
+                                <td style="color: red"><a href="#.php?idt=<?= $rowTopic["id"] ?>">Select</a></td>
                             </tr>
                         <?php
                         }
@@ -205,7 +207,7 @@ if (isset($_POST["addTopic"])) {
         </script>
     <?php
     } else {
-        $addFaculty =   mysqli_query($conn, "INSERT INTO `topic` (`id`,  `topic_name`, `topic_description`, `topic_deadline`,`faculty_id`) VALUES (NULL, '$_POST[topicName]', '$_POST[topicDescription]', '$_POST[startDeadLine]','$_POST[facultyOption]');");
+        $addFaculty =   mysqli_query($conn, "INSERT INTO `topic` (`id`,  `topic_name`, `topic_description`, `topic_deadline`) VALUES (NULL, '$_POST[topicName]', '$_POST[topicDescription]', '$_POST[startDeadLine]');");
     ?>
         <script type="text/javascript">
             alert("add faculty success !");
