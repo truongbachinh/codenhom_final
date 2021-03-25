@@ -17,7 +17,7 @@ $userInforFaculty = mysqli_fetch_assoc($userInfor);
 // }
 
 $file = $conn->query("SELECT * from file_submit_to_topic where file_userId_uploaded = '$userId' AND `file_topic_uploaded` = '$idTopic' AND `id` = (SELECT MAX(id) from `file_submit_to_topic` where `file_userId_uploaded` = '$userId' ) ");
-
+//$file = $conn->query("SELECT * from file_submit_to_topic where file_userId_uploaded = '$userId' AND `file_topic_uploaded` = '$idTopic' ORDER BY id DESC LIMIT 1 ");
 if ($file == true) {
     $fileSubmit = mysqli_fetch_assoc($file);
 }
@@ -235,6 +235,7 @@ if (isset($_POST['uploadFile'])) {
                                             <?php
                                             }
                                             ?>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>Deadline date</td>

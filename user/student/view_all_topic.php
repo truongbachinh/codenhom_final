@@ -8,13 +8,29 @@ $faculty = $conn->query("SELECT user.*, faculty.* FROM user INNER JOIN faculty O
 $studentFacultyInfor = mysqli_fetch_assoc($faculty);
 
 
-$topicInfor = $conn->query("SELECT * from topic");
+$topicInfor = $conn->query("SELECT file_submit_to_topic.*, topic.* FROM file_submit_to_topic RIGHT JOIN topic ON topic.id = file_submit_to_topic.file_topic_uploaded");
 $topicStudentInfor = array();
 while ($tInfor = mysqli_fetch_array($topicInfor)) {
     $topicStudentInfor[] = $tInfor;
 }
 
+//$topicSubmit = $conn->query("SELECT topic.*, file_submit_to_topic.*,user.* from file_submit_to_topic INNER JOIN topic ON topic.id = file_submit_to_topic.file_topic_uploaded INNER JOIN user ON usser.u_id = file_submit_to_topic.file_userId_uploaded");
+//$topicSubmit = $conn->query("SELECT * from file_submit_to_topic where ");
+// $topicSubmit = $conn->query("SELECT * from file_submit_to_topic where file_userId_uploaded = '$userId'");
+// $topicSubmitInfor = array();
+// while ($tpInfor = mysqli_fetch_array($topicSubmit)) {
+//     $topicSubmitInfor[] = $tpInfor;
+// }
+
+
+// var_dump($topicSubmitInfor);
+// exit;
 ?>
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -48,6 +64,7 @@ while ($tInfor = mysqli_fetch_array($topicInfor)) {
                             <th>Topic description</th>
                             <th>Topic Start deadline</th>
                             <th>Topic End deadline</th>
+                            <th>Sumission status</th>
                             <th>Select Topic To sucbmit</th>
                         </tr>
                     </thead>
@@ -70,6 +87,31 @@ while ($tInfor = mysqli_fetch_array($topicInfor)) {
                                 <td><?php echo $row["topic_description"]; ?></td>
                                 <td><?php echo  $row["topic_deadline"] ?></td>
                                 <td><?= $deadline ?></td>
+                                <td><?php
+                                    if (($row["file_status"]) == "1") {
+                                    ?>
+                                        <span>Processing</span>
+                                    <?php
+
+                                    } else if (($row["file_status"]) == "2") {
+                                    ?>
+                                        <span style="color:blue; font-size:16px">Approved</span>
+                                    <?php
+
+                                    } else if (($row["file_status"]) == "3") {
+                                    ?>
+                                        <span style="color:red; font-size:16px">Rejected</span>
+                                    <?php
+                                    } else {
+
+                                    ?>
+                                        <span>Not Graded</span>
+                                    <?php
+
+                                    }
+
+                                    ?>
+                                </td>
                                 <!-- <td><a href="submit.php?idf=<?= $row["faculty_id"] ?>&idt=<?= $row['id'] ?>">Select</a></td> -->
                                 <td><a href="submit.php?idt=<?= $row['id'] ?>">Select</a></td>
                             </tr>
